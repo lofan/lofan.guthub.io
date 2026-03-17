@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <title>RTCROS Prompt Studio v0.8</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root { --primary: #2563eb; --finance: #059669; --edu: #7c3aed; --market: #f59e0b; --version: #6366f1; --lang: #10b981; --ai: #f43f5e; }
+        
+        /* 基礎佈局：鎖定視窗高度 */
+        body { font-family: 'PingFang HK', 'Microsoft JhengHei', sans-serif; background: #f0f2f5; margin: 0; padding: 15px; height: 100vh; overflow: hidden; box-sizing: border-box; }
+        
+        .main-layout { display: grid; grid-template-columns: 350px 1fr 320px; gap: 15px; height: calc(100vh - 30px); max-width: 1800px; margin: 0 auto; }
+	
+	/* 市場控制按鈕 */
+        .mkt-controls { display: flex; gap: 5px; margin-top: 5px; }
+        .btn-sm { padding: 4px 8px; font-size: 11px; border-radius: 4px; border: 1px solid #ddd; background: #fff; cursor: pointer; transition: 0.2s; }
+        .btn-sm:hover { background: #f1f5f9; border-color: var(--primary); }        
+
+        /* 面板通用樣式 */
+        .panel { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; flex-direction: column; overflow: hidden; border: 1px solid #e2e8f0; }
+        
+        .panel-header { padding: 15px 20px; border-bottom: 2px solid #f0f2f5; flex-shrink: 0; background: #fff; z-index: 10; }
+        h3 { margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+
+        /* 重要：獨立捲動區域 */
+        .scroll-area { flex-grow: 1; overflow-y: auto; padding: 15px; scrollbar-width: thin; }
+        .scroll-area::-webkit-scrollbar { width: 6px; }
+        .scroll-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* 零件 Section 樣式 */
+        .section { margin-bottom: 18px; padding: 12px; background: #fafafa; border-radius: 8px; border: 1px solid #eee; }
+        .section-header { font-weight: bold; font-size: 13px; margin-bottom: 10px; color: #475569; display: flex; align-items: center; }
+        .section-header span { background: #e2e8f0; color: #1e293b; padding: 2px 6px; border-radius: 4px; margin-right: 8px; font-family: monospace; }
+        
+        .tag-group { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { padding: 6px 10px; background: white; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+        .tag:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        /* 編輯器專屬樣式 */
+        .editor-container { display: flex; flex-direction: column; height: 100%; }
+        textarea { width: 100%; flex-grow: 1; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; font-size: 15px; line-height: 1.6; resize: none; outline: none; transition: border-color 0.2s; }
+        textarea:focus { border-color: var(--primary); }
+
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <title>RTCROS Prompt Studio v1.2</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root { --primary: #2563eb; --finance: #059669; --edu: #7c3aed; --market: #f59e0b; --version: #6366f1; --lang-en: #3b82f6; --lang-ja: #f43f5e; }
+        body { font-family: 'PingFang HK', 'Microsoft JhengHei', sans-serif; background: #f0f2f5; margin: 0; padding: 15px; height: 100vh; overflow: hidden; box-sizing: border-box; }
+        .main-layout { display: grid; grid-template-columns: 350px 1fr 320px; gap: 15px; height: calc(100vh - 30px); max-width: 1800px; margin: 0 auto; }
+        
+        .panel { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; flex-direction: column; overflow: hidden; border: 1px solid #e2e8f0; }
+        .panel-header { padding: 15px 20px; border-bottom: 2px solid #f0f2f5; flex-shrink: 0; background: #fff; }
+        h3 { margin: 0; font-size: 1.1rem; }
+
+        .scroll-area { flex-grow: 1; overflow-y: auto; padding: 15px; scrollbar-width: thin; }
+        .scroll-area::-webkit-scrollbar { width: 6px; }
+        .scroll-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* 零件樣式 */
+        .section { margin-bottom: 18px; padding: 12px; background: #fafafa; border-radius: 8px; border: 1px solid #eee; }
+        .tag-group { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { padding: 6px 10px; background: white; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; cursor: pointer; transition: 0.2s; }
+        .tag:hover { border-color: var(--primary); color: var(--primary); }
+
+        /* 編輯器區域 */
+        .editor-box { display: flex; flex-direction: column; height: 100%; gap: 10px; }
+        textarea { width: 100%; flex-grow: 1; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; font-size: 15px; line-height: 1.6; resize: none; outline: none; }
+        
+        /* AI 快速傳送 - 6 按鈕佈局 */
+        .ai-bridge { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: #f8fafc; padding: 10px; border-radius: 10px; }
+        .btn-ai { padding: 8px 4px; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 11px; font-weight: bold; text-align: center; }
+        
+        /* AI 品牌色 */
+        .bg-gpt { background: #10a37f; }
+        .bg-claude { background: #d97706; }
+        .bg-gemini { background: #4285f4; }
+        .bg-perplexity { background: #20b2aa; } /* LightSeaGreen */
+        .bg-grok { background: #000000; }
+        .bg-deepseek { background: #60a5fa; }
+
+             
+        .translate-bar { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+        .btn-lang { padding: 5px 12px; border: none; border-radius: 6px; color: white; background: var(--lang); cursor: pointer; font-size: 11px; }
+
+        .btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
+        .btn { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; transition: opacity 0.2s; }
+        .btn:hover { opacity: 0.9; }
+
+        /* 版本快照 */
+        .v-list { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; height: 40px; margin-top: 5px; }
+        .v-pill { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 20px; font-size: 11px; cursor: pointer; white-space: nowrap; }
+    </style>
+</head>
+<body>
+
+<div class="main-layout">
+  <div class="panel">
+        <h3>🏗️ RTCROS 零件庫</h3>
+        <div class="scroll-area">
+            <div class="section">
+                <div class="section-header"><span>R</span> Role (角色身份)</div>
+                <div style="font-size: 11px; color: var(--finance); font-weight: bold; margin: 5px 0;">金融專區</div>
+                <div class="tag-group">
+                    <div class="tag tag-fin" onclick="addText('你而家係一名擁有 15 年經驗嘅 CFA，擅長 DCF 模型同價值投資。')">CFA 分析師</div>
+                    <div class="tag tag-fin" onclick="addText('你而家係一名 IBanker，專門處理企業併購 (M&A) 同 IPO 策略。')">投行顧問</div>
+                    <div class="tag tag-fin" onclick="addText('你而家係一個毒舌、專揭穿市場泡沫嘅財經專欄作家。')">毒舌評論員</div>
+                    <div class="tag tag-fin" onclick="addText('想像一下，一群專家正在討論這個問題。不同的專家會在哪些方面有分歧？')">模擬專家辯論</div>
+
+                </div>
+                <div style="font-size: 11px; color: var(--edu); font-weight: bold; margin: 8px 0 5px 0;">教育專區</div>
+                <div class="tag-group">
+                    <div class="tag tag-edu" onclick="addText('你而家係一位蘇格拉底啟發導師，透過反問引導學生思考。')">蘇格拉底</div>
+                    <div class="tag tag-edu" onclick="addText('你而家係一位雅思 (IELTS) 考官，對口試評分準則極度熟悉。')">IELTS 考官</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header"><span>T</span> Task (具體任務)</div>
+                <div class="tag-group">
+                     <div class="tag" onclick="addText('\n用廣東話分析拆解書/文章/影片')">分析拆解</div>
+		     <div class="tag" onclick="addText('\n用600字總結以上内容')">總結以上内容</div>
+                     <div class="tag" onclick="addText('\n幫我寫一封辭職信，理由係我要返去繼承家業。')">繼承家業辭職信</div>
+                     <div class="tag" onclick="addText('\n幫我制定一個 30 日減肥計劃，唔准叫我食白灼雞胸。')">30日減肥計劃</div>
+                    <div class="tag" onclick="addText('\n幫我撰寫一份投資風險報告。')">寫報告</div>
+                    <div class="tag" onclick="addText('\n幫我修改呢篇 Personal Statement。')">改自傳</div>
+                    <div class="tag" onclick="addText('\n幫我制定一個教學活動計劃。')">整教案</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header"><span>C</span> Context (背景規則)</div>
+                <div class="tag-group">
+                    <div class="tag" onclick="addText('\n對象係完全冇金融背景嘅新手。')">新手對象</div>
+                    <div class="tag" onclick="addText('\n口吻要客氣但立場堅定，唔好提錢。')">客氣堅定</div>
+                    <div class="tag" onclick="addText('\n如果將這個想法應用到現實世界中，會出現哪些挑戰或權衡取捨？')">落地考慮</div>
+                    <div class="tag" onclick="addText('\n請盡可能用淺顯易懂的方式向初學者解釋這個概念。避免使用專業術語，並使用簡單的例子。')">講到細路都明</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header"><span>R</span> Reasoning (邏輯思考)</div>
+                <div class="tag-group">
+                    <div class="tag" onclick="addText('\n運用第一原理思維解釋這個問題。將其分解為最基本的真理，並從頭開始重建解釋。')">由零開始拆解</div>
+                    <div class="tag" onclick="addText('\n請逐步思考 (Step by Step)，先列邏輯再俾結論。')">逐步思考</div>
+                    <div class="tag" onclick="addText('\n喺俾答案之前，請先搵出我邏輯中 3 個漏洞。')">搵漏洞</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header"><span>O</span> Output (格式要求)</div>
+                <div class="tag-group">
+                    <div class="tag" onclick="addText('\n用 Markdown 表格輸出，重點加粗。')">Markdown表格</div>
+                    <div class="tag" onclick="addText('\n用 CSV file 輸出。')">CSV</div>
+                    <div class="tag" onclick="addText('\n用 Excel file 輸出。')">Excel</div>
+                    <div class="tag" onclick="addText('\n用 Google Sheet 輸出。')">Gsheet</div>
+                    <div class="tag" onclick="addText('\n輸出為 5 個 Bullet points 精簡摘要。')">精簡摘要</div>
+                    <div class="tag" onclick="addText('\n用 Infographics 輸出。')">Infograph</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header"><span>S</span> Stop (終止條件)</div>
+                <div class="tag-group">
+                    <div class="tag" onclick="addText('\n寫完就停，唔好講廢話。')">唔好廢話</div>
+                </div>
+            </div>
+
+<div class="section">
+    <div class="section-header"><span>⚡</span> Daily (日常萬用)</div>
+    <div class="tag-group">
+        <div class="tag" style="border-color: #3b82f6;" onclick="addText('\n幫我潤色呢封 Email，對象係我嘅商務伙伴。要求：口吻要專業、得體，確保語法精準且語氣自然。')">📧 Email 潤色</div>
+        
+        <div class="tag" style="border-color: #10b981;" onclick="addText('\n請將以下內容翻譯成專業嘅廣東話/英文。要求：唔好死板翻譯，要根據語境做「信、雅、達」嘅本地化處理，保留原文嘅口氣。')">🎯 高質翻譯</div>
+        
+        <div class="tag" style="border-color: #f59e0b;" onclick="addText('\n幫我總結呢段會議紀錄。要求：用 Bullet points 列出 1. 核心決議、2. 待辦事項 (Action Items)、3. 負責人及期限。')">📝 會議摘要</div>
+        
+        <div class="tag" style="border-color: #ef4444;" onclick="addText('\n檢查以下文字嘅錯別字、標點符號同語法錯誤。請直接列出修改後嘅版本，並用加粗標記修改過嘅地方。')">🔍 錯字糾錯</div>
+        
+        <div class="tag" style="border-color: #8b5cf6;" onclick="addText('\n根據我提供嘅核心重點，將其擴充成一段結構完整、邏輯嚴密嘅論述。要求：增加細節描述，令內容更有說服力。')">✍️ 內容擴充</div>
+    </div>
+</div>
+
+<div class="section">
+    <div class="section-header"><span>📱</span> Social (社媒行銷)</div>
+    <div class="tag-group">
+        <div class="tag" style="border-color: #e1306c;" onclick="addText('\n幫我寫一段 IG 帖文。要求：第一句要極具吸引力，內容生動有趣，加入適量 Emoji，並喺最後加上 10 個相關嘅 Hashtags。')">📸 IG 吸引帖文</div>
+        <div class="tag" style="border-color: #1877f2;" onclick="addText('\n撰寫一段 FB 專頁貼文。要求：口吻要親切、有互動性，引導讀者喺留言區分享感受，增加 Reach 流量。')">👥 FB 互動帖</div>
+        <div class="tag" style="border-color: #ff0000;" onclick="addText('\n幫我諗 5 個 YouTube 影片標題。要求：運用「標題黨」技巧，引發好奇心，目標係提高點擊率 (CTR)。')">🎥 YT 爆款標題</div>
+        <div class="tag" style="border-color: #000000;" onclick="addText('\n將以下內容轉化為 小紅書 风格。要求：多用表情符號，語氣要親切（如：親愛的、寶藏級），結構要清晰，結尾要帶話題。')">📕 小紅書風格</div>
+    </div>
+</div>
+
+<div class="section">
+    <div class="section-header"><span>💻</span> Coding (程式開發)</div>
+    <div class="tag-group">
+        <div class="tag" style="border-color: #334155;" onclick="addText('\n請作為高級工程師，根據以下需求寫出簡潔、高效且易於維護嘅代碼。要求：加入詳細注釋，並列出核心邏輯說明。')">🛠️ 一鍵寫 Code</div>
+        <div class="tag" style="border-color: #059669;" onclick="addText('\n檢查以下代碼有無 Bug 或者邏輯漏洞。如果有，請指出問題所在並提供修正後嘅版本。')">🐞 Bug 偵錯</div>
+        <div class="tag" style="border-color: #2563eb;" onclick="addText('\n重構 (Refactor) 以下代碼。要求：喺唔改變功能嘅前提下，優化代碼結構，提升可讀性同埋執行效率。')">♻️ 代碼優化</div>
+        <div class="tag" style="border-color: #7c3aed;" onclick="addText('\n幫我解釋呢段代碼嘅運作邏輯。請用淺顯易懂嘅說話，逐行或者逐個模塊咁講解。')">📖 代碼解釋</div>
+    </div>
+</div>
+        </div>
+    </div>
+
+
+    <div class="panel">
+        <div class="panel-header"><h3>📝 編輯中心 v0.9beta</h3></div>
+        <div class="scroll-area editor-container">
+            <div class="ai-bridge">
+                <button class="btn-ai bg-gpt" onclick="sendToAI('https://chatgpt.com')">ChatGPT</button>
+                <button class="btn-ai bg-claude" onclick="sendToAI('https://claude.ai')">Claude</button>
+                <button class="btn-ai bg-gemini" onclick="sendToAI('https://gemini.google.com')">Gemini</button>
+                <button class="btn-ai bg-perplexity" onclick="sendToAI('https://www.perplexity.ai')">Perplexity</button>
+                <button class="btn-ai bg-grok" onclick="sendToAI('https://grok.com')">Grok</button>
+                <button class="btn-ai bg-deepseek" onclick="sendToAI('https://chat.deepseek.com')">DeepSeek</button>
+            </div>
+
+            <div class="translate-bar">
+                <button class="btn-lang" onclick="translateText('en')">轉英文 (EN)</button>
+                <button class="btn-lang" onclick="translateText('ja')">轉日文 (JA)</button>
+                <span id="translateStatus" style="font-size: 11px; color: #666;"></span>
+            </div>
+
+            <textarea id="mainPrompt" placeholder="點擊零件或在此輸入..."></textarea>
+            
+            <div class="v-list" id="vList"></div>
+
+            <div style="font-size: 12px; color: #666; margin-top: 10px; display: flex; justify-content: space-between;">
+                <span>字數: <strong id="wCount">0</strong></span>
+                <span>Auto-copy enabled ✅</span>
+            </div>
+
+            <div class="btn-grid">
+                <button class="btn btn-copy" style="background:var(--primary)" onclick="copyPrompt()">📋 複製</button>
+                <button class="btn" style="background:var(--market)" onclick="saveToMarket()">🌟 存市場</button>
+                <button class="btn" style="background:#dc2626" onclick="exportPDF()">📄 PDF</button>
+                <button class="btn" style="background:#64748b" onclick="resetAll()">🧹 清空</button>
+            </div>
+        </div>
+    </div>
+
+ <div class="panel">
+        <div class="panel-header">
+            <h3>
+                🛒 我的市場
+                <div class="mkt-controls">
+                    <button class="btn-sm" onclick="exportMarket()">📤 匯出</button>
+                    <button class="btn-sm" onclick="document.getElementById('importFile').click()">📥 匯入</button>
+                    <input type="file" id="importFile" style="display:none" accept=".json" onchange="importMarket(event)">
+                </div>
+            </h3>
+        </div>
+        <div class="scroll-area" id="mktList"></div>
+    </div>
+</div>
+
+
+<script>
+// --- 市場數據同步功能 ---
+    
+    // 匯出市場為 JSON
+    function exportMarket() {
+        const data = localStorage.getItem('pMarket') || "[]";
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `RTCROS_Market_Backup_${new Date().toISOString().slice(0,10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // 匯入市場 JSON
+    function importMarket(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                let currentData = JSON.parse(localStorage.getItem('pMarket')) || [];
+                // 合併數據並去重 (以內容為準)
+                const combined = [...importedData, ...currentData];
+                const unique = combined.filter((v, i, a) => a.findIndex(t => t.content === v.content) === i);
+                
+                localStorage.setItem('pMarket', JSON.stringify(unique));
+                renderMarket();
+                alert(`成功匯入！現共有 ${unique.length} 個項目。`);
+            } catch (err) {
+                alert("檔案格式錯誤，請確保係有效的 JSON 檔案。");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    // 核心功能：添加文字
+    function addText(text) {
+        const area = document.getElementById('mainPrompt');
+        if(area.value.trim().length > 0) saveSnapshot(area.value);
+        area.value += text + " ";
+        updateWordCount();
+    }
+
+    // 字數統計
+    function updateWordCount() {
+        document.getElementById('wCount').innerText = document.getElementById('mainPrompt').value.length;
+    }
+
+    // 監聽輸入
+    document.getElementById('mainPrompt').addEventListener('input', updateWordCount);
+
+    // AI 跳轉
+    function sendToAI(url) {
+        const text = document.getElementById('mainPrompt').value.trim();
+        if(!text) return alert("內容為空");
+        navigator.clipboard.writeText(text).then(() => {
+            const status = document.getElementById('translateStatus');
+            status.innerText = "已複製，跳轉中...";
+            setTimeout(() => { status.innerText = ""; window.open(url, '_blank'); }, 800);
+        });
+    }
+
+    // 翻譯功能
+    async function translateText(targetLang) {
+        const text = document.getElementById('mainPrompt').value.trim();
+        if(!text) return;
+        const status = document.getElementById('translateStatus');
+        status.innerText = "翻譯中...";
+        saveSnapshot(text);
+        try {
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            document.getElementById('mainPrompt').value = data[0].map(x => x[0]).join('');
+            updateWordCount();
+            status.innerText = "翻譯完成";
+            setTimeout(() => status.innerText = "", 2000);
+        } catch (e) { status.innerText = "出錯了"; }
+    }
+
+    // 版本管理
+    function saveSnapshot(content) {
+        let v = JSON.parse(localStorage.getItem('vHistory')) || [];
+        if(v.length > 0 && v[0].content === content) return;
+        v.unshift({ time: new Date().toLocaleTimeString(), content });
+        if(v.length > 10) v.pop();
+        localStorage.setItem('vHistory', JSON.stringify(v));
+        renderVersions();
+    }
+
+    function renderVersions() {
+        const list = document.getElementById('vList');
+        const v = JSON.parse(localStorage.getItem('vHistory')) || [];
+        list.innerHTML = '';
+        v.forEach(item => {
+            const pill = document.createElement('div'); pill.className = 'v-pill'; pill.innerText = item.time;
+            pill.onclick = () => { document.getElementById('mainPrompt').value = item.content; updateWordCount(); };
+            list.appendChild(pill);
+        });
+    }
+
+    // 市場功能
+    function saveToMarket() {
+        const text = document.getElementById('mainPrompt').value.trim();
+        const name = prompt("命名此 Prompt：");
+        if(!name || !text) return;
+        let m = JSON.parse(localStorage.getItem('pMarket')) || [];
+        m.unshift({ name, content: text });
+        localStorage.setItem('pMarket', JSON.stringify(m));
+        renderMarket();
+    }
+
+    function renderMarket() {
+        const list = document.getElementById('mktList');
+        const m = JSON.parse(localStorage.getItem('pMarket')) || [];
+        list.innerHTML = '';
+        m.forEach(item => {
+            const div = document.createElement('div');
+            div.style = "background: #fffbeb; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; margin-bottom: 10px; cursor: pointer;";
+            div.onclick = () => { document.getElementById('mainPrompt').value = item.content; updateWordCount(); };
+            div.innerHTML = `<strong style="font-size:13px;">${item.name}</strong><p style="margin:5px 0 0; font-size:11px; color:#666; display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${item.content}</p>`;
+            list.appendChild(div);
+        });
+    }
+
+    function copyPrompt() { navigator.clipboard.writeText(document.getElementById('mainPrompt').value); alert("已複製！"); }
+    function resetAll() { if(confirm("確定清空？")) { document.getElementById('mainPrompt').value = ""; updateWordCount(); } }
+    function exportPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text(doc.splitTextToSize(document.getElementById('mainPrompt').value, 180), 15, 20);
+        doc.save("prompt.pdf");
+    }
+
+    window.onload = () => { renderMarket(); renderVersions(); updateWordCount(); };
+</script>
+
+</body>
+</html>
