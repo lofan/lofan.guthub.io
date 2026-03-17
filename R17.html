@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <title>RTCROS Prompt Studio v1.6</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root { 
+            --primary: #2563eb; --finance: #059669; --edu: #7c3aed; --market: #f59e0b; 
+            --lang-zh: #10b981; --lang-en: #3b82f6; --lang-ja: #f43f5e; 
+            --lang-de: #475569; --lang-ko: #ec4899; --lang-fr: #6366f1;
+        }
+        body { font-family: 'PingFang HK', 'Microsoft JhengHei', sans-serif; background: #f0f2f5; margin: 0; padding: 15px; height: 100vh; overflow: hidden; box-sizing: border-box; }
+        .main-layout { display: grid; grid-template-columns: 350px 1fr 320px; gap: 15px; height: calc(100vh - 30px); max-width: 1800px; margin: 0 auto; }
+        .panel { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; flex-direction: column; overflow: hidden; border: 1px solid #e2e8f0; }
+        .panel-header { padding: 15px 20px; border-bottom: 2px solid #f0f2f5; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* 摺疊選單 */
+        .accordion-item { border-bottom: 1px solid #eee; }
+        .accordion-header { width: 100%; padding: 12px 15px; background: #fff; border: none; text-align: left; font-weight: bold; font-size: 13px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .accordion-content { display: none; padding: 12px; background: #fafafa; }
+        .accordion-item.active .accordion-content { display: block; }
+        .accordion-item.active .accordion-header { color: var(--primary); background: #eff6ff; }
+        .accordion-header::after { content: '▼'; font-size: 10px; transition: 0.3s; }
+        .accordion-item.active .accordion-header::after { transform: rotate(180deg); }
+
+        .tag-group { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { padding: 5px 9px; background: #fff; border: 1px solid #ddd; border-radius: 5px; font-size: 11px; cursor: pointer; transition: 0.2s; }
+        .tag:hover { border-color: var(--primary); color: var(--primary); }
+
+        /* 編輯器 */
+        .scroll-area { flex-grow: 1; overflow-y: auto; padding: 10px; scrollbar-width: thin; }
+        textarea { width: 100%; flex-grow: 1; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; font-size: 15px; line-height: 1.6; resize: none; outline: none; }
+        
+        .ai-bridge { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: #f8fafc; padding: 10px; border-radius: 10px; }
+        .btn-ai { padding: 8px 4px; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 11px; font-weight: bold; }
+        
+        /* 語言按鈕 - 6格排列 */
+        .lang-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-top: 10px; }
+        .btn-lang { padding: 6px 0; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 10px; font-weight: bold; text-align: center; }
+
+        .btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+        .btn { padding: 12px 5px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; font-size: 13px; }
+        
+        .var-hint-row { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+        .btn-clear-var { background: #fff7ed; color: #c2410c; border: 1px solid #fdba74; padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: bold; }
+        
+        /* 市場工具 */
+        .mkt-tool { display: flex; gap: 5px; }
+        .btn-icon { padding: 4px 8px; font-size: 12px; cursor: pointer; border-radius: 4px; border: 1px solid #ddd; background: #fff; }
+    </style>
+</head>
+<body>
+
+<div class="main-layout">
+    <div class="panel">
+        <div class="panel-header"><h3>🏗️ RTCROS 模板庫 v1.4</h3></div>
+        <div class="scroll-area" style="padding:0;">
+            <div class="accordion-item active">
+                <button class="accordion-header" onclick="toggleAccordion(this)">👤 Role (角色設定)</button>
+                <div class="accordion-content">
+                    <div class="tag-group">
+                        <div class="tag" onclick="addTemplate('你而家係一名資深 [職位/專家]，擁有超過 [10] 年經驗。')">資深專家</div>
+                        <div class="tag" onclick="addTemplate('你而家係一名 [語言] 翻譯官，專精於在地化。')">翻譯官</div>
+                        <div class="tag" onclick="addTemplate('你而家係 [某著名人物] 的分身，請模仿其口吻。')">人物模仿</div>
+                        <div class="tag" onclick="addTemplate('想像一下，一群[某領域]專家正在討論這個問題。不同的專家會在哪些方面有分歧？')">專家辯論</div>
+                        <div class="tag" onclick="addTemplate('你而家係一名[某領域]毒舌評論員。')">毒舌評論員</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" onclick="toggleAccordion(this)">🎯 Task (核心任務)</button>
+                <div class="accordion-content">
+                    <div class="tag-group">
+                        <div class="tag" onclick="addTemplate('用廣東話分析拆解書/文章/影片 [內容]。用[600]字總結以上内容')">分析拆解</div>
+                        <div class="tag" onclick="addTemplate('請幫我將 [內容] 潤色成 [商務/幽默] 風格。')">風格潤色</div>
+                        <div class="tag" onclick="addTemplate('A professional and clean modern business infographic template, with [three] distinct [vertical columns], flat vector illustration style. Each column has a large placeholder circle for an icon at the top and a structured rectangular container for text below. The colors are [Blue, Purple, and Green] from left to right. The background is a clean, abstract tech pattern. High quality, zero text or characters. title: [標題]  [內容]')">InfoG</div>
+                        <div class="tag" onclick="addTemplate('針對 [主題]，撰寫一份包含 [3] 個方案的計劃。')">方案撰寫</div>
+                        <div class="tag" onclick="addTemplate('將以下 [技術文檔] 總結給 [初學者] 睇。')">內容總結</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" onclick="toggleAccordion(this)">🧠 Reasoning (推理邏輯)</button>
+                <div class="accordion-content">
+                    <div class="tag-group">
+                        <div class="tag" onclick="addTemplate('請先解釋你對 [問題] 的理解，然後再給出建議。')">先理解後建議</div>
+                        <div class="tag" onclick="addTemplate('運用 [第一原理/SCAMPER] 框架來分析 [現象]。')">思維框架</div>
+                        <div class="tag" onclick="addTemplate('請逐步思考，並標註出每個步驟的 [假設]。')">假設標註</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" onclick="toggleAccordion(this)">📊 Output (格式與終止)</button>
+                <div class="accordion-content">
+                    <div class="tag-group">
+                        <div class="tag" onclick="addTemplate('請用 [表格/JSON] 輸出，並確保包含 [欄位名稱]。')">格式指定</div>
+                        <div class="tag" onclick="addTemplate('寫完 [重點] 就停，唔好講任何開場白。')">極簡輸出</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" onclick="toggleAccordion(this)">⚡ Daily Use</button>
+                <div class="accordion-content">
+                    <div class="tag-group">
+                        <div class="tag" onclick="addTemplate('幫我總結呢段會議紀錄。要求：用 Bullet points 列出 1. 核心決議、2. 待辦事項 (Action Items)、3. 負責人及期限。')">會議摘要</div>
+                        <div class="tag" onclick="addTemplate('根據我提供嘅核心[重點]，將其擴充成一段結構完整、邏輯嚴密嘅論述。要求：增加細節描述，令內容更有說服力。')">內容擴充</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header"><h3>📝 編輯中心 v1.6</h3></div>
+        <div class="scroll-area" style="display:flex; flex-direction:column; gap:10px;">
+            <div class="ai-bridge">
+                <button class="btn-ai" style="background:#10a37f" onclick="sendToAI('https://chatgpt.com')">ChatGPT</button>
+                <button class="btn-ai" style="background:#d97706" onclick="sendToAI('https://claude.ai')">Claude</button>
+                <button class="btn-ai" style="background:#4285f4" onclick="sendToAI('https://gemini.google.com')">Gemini</button>
+                <button class="btn-ai" style="background:#20b2aa" onclick="sendToAI('https://www.perplexity.ai')">Perplexity</button>
+                <button class="btn-ai" style="background:#000" onclick="sendToAI('https://grok.com')">Grok</button>
+                <button class="btn-ai" style="background:#60a5fa" onclick="sendToAI('https://chat.deepseek.com')">DeepSeek</button>
+            </div>
+            
+            <div class="lang-grid">
+                <button class="btn-lang" style="background:var(--lang-zh)" onclick="translateTo('zh-TW')">繁中</button>
+                <button class="btn-lang" style="background:var(--lang-en)" onclick="translateTo('en')">EN</button>
+                <button class="btn-lang" style="background:var(--lang-ja)" onclick="translateTo('ja')">JA</button>
+                <button class="btn-lang" style="background:var(--lang-de)" onclick="translateTo('de')">DE</button>
+                <button class="btn-lang" style="background:var(--lang-ko)" onclick="translateTo('ko')">KO</button>
+                <button class="btn-lang" style="background:var(--lang-fr)" onclick="translateTo('fr')">FR</button>
+            </div>
+
+            <textarea id="mainPrompt" placeholder="點擊零件砌 Prompt..." oninput="updateWordCount()"></textarea>
+            
+            <div class="var-hint-row">
+                <button class="btn-clear-var" onclick="clearVariables()">🧹 一鍵清空變數 [ ]</button>
+                <div style="font-size:12px; color:#64748b;">字數: <strong id="wCount">0</strong></div>
+            </div>
+
+            <div class="btn-grid">
+                <button class="btn" style="background:var(--primary)" onclick="copyPrompt()">📋 複製</button>
+                <button class="btn" style="background:var(--market)" onclick="saveToMarket()">🌟 存市場</button>
+                <button class="btn" style="background:#dc2626" onclick="exportPDF()">📄 PDF</button>
+                <button class="btn" style="background:#64748b" onclick="resetAll()">🧹 清空</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <h3>🛒 我的市場</h3>
+            <div class="mkt-tool">
+                <button class="btn-icon" title="匯出 JSON" onclick="exportJSON()">📤</button>
+                <button class="btn-icon" title="匯入 JSON" onclick="document.getElementById('fileIn').click()">📥</button>
+                <input type="file" id="fileIn" style="display:none" accept=".json" onchange="importJSON(this)">
+            </div>
+        </div>
+        <div class="scroll-area" id="mktList"></div>
+    </div>
+</div>
+
+<script>
+    function toggleAccordion(btn) { btn.parentElement.classList.toggle('active'); }
+    function addTemplate(text) {
+        const area = document.getElementById('mainPrompt');
+        area.value += text + "\n";
+        updateWordCount();
+        area.scrollTop = area.scrollHeight;
+    }
+    function updateWordCount() { document.getElementById('wCount').innerText = document.getElementById('mainPrompt').value.length; }
+    
+    function clearVariables() {
+        const area = document.getElementById('mainPrompt');
+        area.value = area.value.replace(/\[.*?\]/g, "[ ]");
+        updateWordCount();
+    }
+
+    async function translateTo(lang) {
+        const area = document.getElementById('mainPrompt');
+        if(!area.value.trim()) return;
+        try {
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(area.value)}`;
+            const resp = await fetch(url);
+            const data = await resp.json();
+            area.value = data[0].map(x => x[0]).join('');
+            updateWordCount();
+        } catch(e) { alert("翻譯失敗"); }
+    }
+
+    function exportJSON() {
+        const data = localStorage.getItem('pMarket') || "[]";
+        const blob = new Blob([data], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Prompts_Backup_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+    }
+
+    function importJSON(input) {
+        const file = input.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                if(confirm(`匯入 ${data.length} 個項目？`)) {
+                    let m = JSON.parse(localStorage.getItem('pMarket')) || [];
+                    localStorage.setItem('pMarket', JSON.stringify([...data, ...m]));
+                    renderMarket();
+                }
+            } catch(err) { alert("無效的 JSON 檔案"); }
+        };
+        reader.readAsText(file);
+    }
+
+    function sendToAI(url) {
+        const text = document.getElementById('mainPrompt').value.trim();
+        if(!text) return alert("請輸入內容");
+        navigator.clipboard.writeText(text).then(() => { window.open(url, '_blank'); });
+    }
+    function copyPrompt() { navigator.clipboard.writeText(document.getElementById('mainPrompt').value); alert("已複製！"); }
+    function saveToMarket() {
+        const text = document.getElementById('mainPrompt').value.trim();
+        const name = prompt("命名此 Prompt：");
+        if(!name || !text) return;
+        let m = JSON.parse(localStorage.getItem('pMarket')) || [];
+        m.unshift({ name, content: text });
+        localStorage.setItem('pMarket', JSON.stringify(m));
+        renderMarket();
+    }
+    function renderMarket() {
+        const list = document.getElementById('mktList');
+        const m = JSON.parse(localStorage.getItem('pMarket')) || [];
+        list.innerHTML = '';
+        m.forEach((item, idx) => {
+            const div = document.createElement('div');
+            div.style = "background:#fffbeb; border:1px solid #fde68a; padding:10px; border-radius:8px; margin-bottom:10px; cursor:pointer; position:relative;";
+            div.onclick = () => { document.getElementById('mainPrompt').value = item.content; updateWordCount(); };
+            div.innerHTML = `<strong>${item.name}</strong><p style="margin:5px 0 0; font-size:11px; color:#666;">${item.content.substring(0,50)}...</p><span onclick="deleteItem(event, ${idx})" style="position:absolute; top:5px; right:8px; color:#ccc;">✕</span>`;
+            list.appendChild(div);
+        });
+    }
+    function deleteItem(e, idx) {
+        e.stopPropagation();
+        if(!confirm("刪除？")) return;
+        let m = JSON.parse(localStorage.getItem('pMarket')) || [];
+        m.splice(idx, 1);
+        localStorage.setItem('pMarket', JSON.stringify(m));
+        renderMarket();
+    }
+    function resetAll() { if(confirm("確定清空？")) { document.getElementById('mainPrompt').value = ""; updateWordCount(); } }
+    function exportPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text(doc.splitTextToSize(document.getElementById('mainPrompt').value, 180), 15, 20);
+        doc.save("prompt.pdf");
+    }
+    window.onload = renderMarket;
+</script>
+</body>
+</html>
