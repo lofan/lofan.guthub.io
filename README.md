@@ -10,7 +10,7 @@ This is a single html file helping Prompt gen. Remember click the AI button, Ctr
 * 🛡️ 市場與備份：具備 Delete 刪除功能，並支援跨裝置 JSON 導入/導出。
 * 🌗 智能環境切換：完整的 Dark Mode / Light Mode，保護長時間工作的視力。
 
-# 比較六個LLM Claude, perplexity, grok, chapgpt, deepseek gemini
+# 比較六個LLM: Claude、Perplexity、Grok、ChatGPT、DeepSeek、Gemini
 下面用 2026 年的大致情況，幫你用中文比較這六個系統：Claude、Perplexity、Grok、ChatGPT、DeepSeek、Gemini。  
 
 ## 一句總結  
