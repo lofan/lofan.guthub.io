@@ -28,3 +28,12 @@ This is a single html file helping Prompt gen. Remember click the AI button, Ctr
 * Grok：有 Grok Imagine，可生成高解析度影像與影片，並規劃未來 AI 影片、機器人整合等。
 * Gemini：支援圖片理解、影片、以及 Veo 等多媒體模型，放在 Google AI Pro/Ultra 中。
 * ChatGPT：隨 GPT‑5 系列有穩定的圖片理解與生成（依地區開放程度而定）
+
+* | 需求                                        | 比較適合的選擇    | 說明                                        |
+| ----------------------------------------- | ---------- | ----------------------------------------- |
+| 想要「問了就幫我找資料+附來源」                          | Perplexity | 內建搜尋、引用來源、深度報告模式，很適合寫報告或技術研究datastudios+1 |
+| 常追 X/Twitter 熱點、關心即時輿論                    | Grok       | 和 X 深度綁定，能看到平台最新動態與貼文脈絡skywork+1          |
+| 長篇文字整理、閱讀 PDF、寫作                          | Claude     | 長文處理能力與語氣體驗好，中文英文都不錯glbgpt+2              |
+| 想要一個「什麼都能玩」的大眾款                           | ChatGPT    | 生態最大，自訂 GPT 多，教學資源極多eesel+2               |
+| 想省錢又要強推理/程式                               | DeepSeek   | 高推理表現 + 低價格，目前在技術圈很熱門zilliz+2             |
+| 深度使用 Google 生態 (Gmail/Docs/Drive/Android) | Gemini     | 與 Google 服務整合最緊密crazyrouter+2             |
