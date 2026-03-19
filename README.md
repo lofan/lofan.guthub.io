@@ -1,5 +1,5 @@
 # PromptGen
-This is a single html file helping Prompt gen.
+This is a single html file helping Prompt gen. Remember click the AI button, Ctrl-V Paste the prompt in new broser window.
 * 🔗 AI-Bridge 跳板：點擊任何 AI 平台按鈕，系統會先幫你複製當前編輯器內容，然後直接開新視窗讓你黏貼測試。
 * 📂 多維度分類：新增零件時，只要輸入相同的「分類名稱」（例如：👤 角色），系統就會自動把它們歸類到同一個手風琴文件夾中。
 * 📦 摺疊式介面：左側分類預設可以點擊展開，讓你在擁有數十個零件時，介面依然清爽。
