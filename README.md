@@ -11,24 +11,6 @@ This is a single html file helping Prompt gen. Remember click the AI button, Ctr
 * 🌗 智能環境切換：完整的 Dark Mode / Light Mode，保護長時間工作的視力。
 
 # 比較六個LLM Claude, perplexity, grok, chapgpt, deepseek gemini
-## 功能側重（聊天、搜尋、研究、程式、文件）
-### 日常聊天 / 寫作
-* Claude：語氣自然、偏溫和，長篇寫作、改稿、總結表現很穩定。
-* ChatGPT：創意寫作、角色扮演、教學資源豐富，插件 / 自訂 GPT 生態完整。
-* Gemini：和 Google 帳號、Android、Chrome 配合，用起來很順手。
-### 搜尋 / 研究
-* Perplexity：問問題時自動幫你搜尋網路、整合多個來源做報告，有 Deep Research、Model Council，會標來源。
-* Grok：重點是「即時」和 X 內容，追蹤熱門新聞、社群輿論特別方便。
-* Gemini：有 Deep Research、與 Google Search 結合的功能，對學術/技術資料也不錯。
-### 程式 / 推理 / 數學
-* DeepSeek：V3 / V3.2 對數學、競賽題、程式、工具調用非常強，在多個官方 benchmark 上超過 GPT-4.5，同時計價很低。
-* ChatGPT：GPT‑5 系列在程式輔助、debug、生態工具（Code Interpreter 類功能）仍然很好用。
-* Claude：在閱讀大型程式碼庫、長文件 + 程式混合任務上也有優勢。
-### 多模態（圖像/影片）
-* Grok：有 Grok Imagine，可生成高解析度影像與影片，並規劃未來 AI 影片、機器人整合等。
-* Gemini：支援圖片理解、影片、以及 Veo 等多媒體模型，放在 Google AI Pro/Ultra 中。
-* ChatGPT：隨 GPT‑5 系列有穩定的圖片理解與生成（依地區開放程度而定）
-
 下面用 2026 年的大致情況，幫你用中文比較這六個系統：Claude、Perplexity、Grok、ChatGPT、DeepSeek、Gemini。  
 
 ## 一句總結  
@@ -104,7 +86,7 @@ This is a single html file helping Prompt gen. Remember click the AI button, Ctr
 
 ***
 
-## 5. 依你情境給建議（在加拿大）  
+## 5. 依你情境給建議  
 
 如果你只是一般個人使用、預算有限，可以考慮：  
 1. 日常聊天 + 創作：用 ChatGPT Free/Plus 或 Claude Free/Pro。ChatGPT 生態比較大，Claude 寫作體驗比較柔和。 [screenapp](https://screenapp.io/blog/claude-ai-pricing)
@@ -112,8 +94,4 @@ This is a single html file helping Prompt gen. Remember click the AI button, Ctr
 3. 程式 / 理工科：如果有機會用 DeepSeek（例如透過 API 或特定平台），它在數學和程式的表現與價格都非常有優勢。 [siliconflow](https://www.siliconflow.com/articles/en/the-best-deepseek-ai-models-in-2025)
 4. 重度 Google 使用者：考慮 Gemini Advanced（Google One AI Premium），一個訂閱同時給你雲端空間和高階模型。 [gamsgo](https://www.gamsgo.com/blog/google-gemini-pro)
 
-如果你願意說說：  
-- 你主要是「寫程式、寫論文、做研究、還是一般聊天」？  
-- 每月大概能接受多少訂閱預算？  
 
-我可以幫你縮成 1–2 個最適合你現在就用的組合。
