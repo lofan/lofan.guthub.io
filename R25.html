@@ -139,9 +139,11 @@
         { cat: "👤 角色", name: "資深專家", text: "你而家係一名資深 [職位/財經] 專家，擁有超過 [10] 年經驗。" },
         { cat: "👤 角色", name: "毒舌評論員", text: "你而家係一名[某領域]毒舌評論員。" },
         { cat: "👤 角色", name: "專家辯論", text: "想像一下，一群[某領域]專家正在討論這個問題。不同的專家會在哪些方面有分歧？" },
+        { cat: "👤 角色", name: "講故事官", text: "你而家係一名首席講故事官Chief StoryTeller。" },
         { cat: "👤 角色", name: "人物模仿", text: "你而家係 [某著名人物] 的分身，請模仿其口吻。" },
         { cat: "👤 角色", name: "翻譯官", text: "你而家係一名 [語言] 翻譯官，專精於在地化" },
         { cat: "🎯 任務", name: "分析拆解", text: "用廣東話分析拆解書/文章/影片 [內容]。用[600]字總結以上内容" },
+	{ cat: "🎯 任務", name: "重點新聞", text: "今天/下周[AI/財經/娛樂]重點新聞" },
         { cat: "🎯 任務", name: "潤色風格", text: "請幫我將 [內容] 潤色成 [商務/幽默] 風格。" },
         { cat: "🎯 任務", name: "InfoGraphics", text: "A professional and clean modern business infographic template, with [three] distinct [vertical columns], flat vector illustration style. Each column has a large placeholder circle for an icon at the top and a structured rectangular container for text below. The colors are [Blue, Purple, and Green] from left to right. The background is a clean, abstract tech pattern. High quality, zero text or characters. title:[標題]  [內容]。" },
         { cat: "🎯 任務", name: "內容總結", text: "將以下 [技術文檔] 總結給 [初學者] 睇。" },
@@ -200,10 +202,11 @@
     function addText(t) { const a = document.getElementById('mainPrompt'); a.value += t + "\n"; updateWC(); }
     function updateWC() { document.getElementById('wCount').innerText = document.getElementById('mainPrompt').value.length; }
     function copyText() { navigator.clipboard.writeText(document.getElementById('mainPrompt').value); alert("已複製！"); }
+    function copyTextw() { navigator.clipboard.writeText(document.getElementById('mainPrompt').value);}
     function clearVars() { document.getElementById('mainPrompt').value = document.getElementById('mainPrompt').value.replace(/\[.*?\]/g, "[ ]"); }
     function resetAll() { if(confirm("確定清空？")) document.getElementById('mainPrompt').value = ""; updateWC(); }
     function toggleTheme() { const n = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; document.body.setAttribute('data-theme', n); localStorage.setItem('rtcros-theme', n); }
-    function sendToAI(url) { copyText(); window.open(url, '_blank'); }
+    function sendToAI(url) { copyTextw(); window.open(url, '_blank'); }
 
     // --- 翻譯與優化 ---
     async function translateTo(lang) {
