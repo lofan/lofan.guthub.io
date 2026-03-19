@@ -12,11 +12,11 @@ This is a single html file helping Prompt gen. Remember click the AI button, Ctr
 
 # 比較六個LLM Claude, perplexity, grok, chapgpt, deepseek gemini
 ## 功能側重（聊天、搜尋、研究、程式、文件）
-*日常聊天 / 寫作
-Claude：語氣自然、偏溫和，長篇寫作、改稿、總結表現很穩定。
-ChatGPT：創意寫作、角色扮演、教學資源豐富，插件 / 自訂 GPT 生態完整。
-Gemini：和 Google 帳號、Android、Chrome 配合，用起來很順手。
-* 搜尋 / 研究
+### 日常聊天 / 寫作
+* Claude：語氣自然、偏溫和，長篇寫作、改稿、總結表現很穩定。
+* ChatGPT：創意寫作、角色扮演、教學資源豐富，插件 / 自訂 GPT 生態完整。
+* Gemini：和 Google 帳號、Android、Chrome 配合，用起來很順手。
+### 搜尋 / 研究
 Perplexity：問問題時自動幫你搜尋網路、整合多個來源做報告，有 Deep Research、Model Council，會標來源。
 Grok：重點是「即時」和 X 內容，追蹤熱門新聞、社群輿論特別方便。
 Gemini：有 Deep Research、與 Google Search 結合的功能，對學術/技術資料也不錯。
