@@ -1,6 +1,7 @@
-Chatbot -  R.T.C.R.O.S. https://gemini.google.com/share/ebf29c5c1f94
-Image -  F.R.A.M.E. https://gemini.google.com/share/e3306eaf9856
-Video -  S.A.M.E.   https://gemini.google.com/share/50e985ac0ea3
+# Good Prompting Guide
+Chatbot -  R.T.C.R.O.S. 
+Image -  F.R.A.M.E. 
+Video -  S.A.M.E.   
 
 明白晒！呢套 R.T.C.R.O.S. 框架其實就係一個「指令說明書」，將 AI 變做一個「聽得明人話、又識得按規矩做嘢」嘅專家。
 等我用廣東話幫你拆解呢幾個核心重點，保證你一睇就明：
