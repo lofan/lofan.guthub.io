@@ -7,6 +7,9 @@ This is a single html file helping Prompt gen. Remember click the AI button, Ctr
 * 完全自定義：下方設有新增區，隨時填入標籤名（標題）同 Prompt 內容，按一下就永久保存。
 * 標籤化刪除：每個零件右上角都有個細細嘅 ✕，撳一下就可以將舊零件踢走，保持介面簡潔。
 * 持久化儲存：所有零件都直接存喺你部電腦嘅 Browser 度，即使你關閉網頁再開，你嘅個人庫存都仲喺度。
+* 🌍 六國語言翻譯列：重新加入繁中、英、日、德、韓、法翻譯功能，方便跨語言優化 Prompt。
+* 時光機 + 零件庫：左側同時管理版本紀錄與 v1.4 的零件模板。
+* AI 快速跳板：中上方六大 AI 按鈕，點擊即複製並跳轉測試。
 * 🛡️ 市場與備份：具備 Delete 刪除功能，並支援跨裝置 JSON 導入/導出。
 * 🌗 智能環境切換：完整的 Dark Mode / Light Mode，保護長時間工作的視力。
 * [Good Prompt Guide ](promptguide.md)  Chatbot - R.T.C.R.O.S. Image - F.R.A.M.E. Video - S.A.M.E.
