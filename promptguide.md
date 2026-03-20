@@ -54,7 +54,7 @@ Video -  S.A.M.E.
 如果加埋 Reasoning (R) 同 Stop (S)，AI 就會變到好似一個有思考能力嘅下屬，而唔係一部死板嘅機器。
 
 想唔想試吓？如果你而家有個任務（例如想寫篇 Post、改份 CV），我可以幫你用 R.T.C.R.O.S. 框架砌一個超強嘅 Prompt 出嚟！你個任務係咩呀？
-
+例子： 你而家係一名資深 AI 專家，擁有超過 [10] 年經驗。比較六個LLM Claude, perplexity, grok, chapgpt, deepseek gemini
 
 正所謂「工欲善其事，必先利其器」，想用 AI 畫一張靚圖，呢個 IMAGE - F.R.A.M.E. 框架簡直係「咒語指南」。我而家就用廣東話幫你拆解呢五個核心元素，等你可以好似變魔術咁，準確話畀 AI 知你想要咩。
 
